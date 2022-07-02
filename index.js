@@ -26,7 +26,7 @@ try {
   const targetPeer = await api.call('contacts.resolveUsername', { username: process.env.TO_USERNAME })
   global.target = targetPeer.chats[0]
 
-  poll()
+  await poll()
   setInterval(() => poll(), pollInterval)
 } catch(e) {
   await fetch(`https://api.telegram.org/bot${process.env.ERROR_HANDLER_BOT_TOKEN}/sendMessage`, {
