@@ -1,0 +1,20 @@
+{
+  "name": "telegram-channel-mirror-mtproto",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "vityaschel <hi@hloth.dev> (https://hloth.dev/)",
+  "license": "MIT",
+  "dependencies": {
+    "@mtproto/core": "^6.2.0",
+    "dotenv": "^16.0.1",
+    "readline-sync": "^1.4.10"
+  },
+  "devDependencies": {
+    "eslint": "^8.19.0"
+  }
+}
