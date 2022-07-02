@@ -31,9 +31,12 @@ try {
 } catch(e) {
   await fetch(`https://api.telegram.org/bot${process.env.ERROR_HANDLER_BOT_TOKEN}/sendMessage`, {
     method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
     body: JSON.stringify({
       chat_id: process.env.ERROR_HANDLER_USER_ID,
-      text: e.message ?? JSON.stringify(e)
+      text: e.message || JSON.stringify(e, Object.getOwnPropertyNames(e)) || e
     })
   })
   process.exit(0)
