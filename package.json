@@ -5,7 +5,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "pm2": "pm2 start \"node index.js\" --name=\"_mirror\" --no-autorestart"
   },
   "author": "vityaschel <hi@hloth.dev> (https://hloth.dev/)",
   "license": "MIT",
