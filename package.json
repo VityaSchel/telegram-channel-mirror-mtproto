@@ -12,6 +12,7 @@
   "dependencies": {
     "@mtproto/core": "^6.2.0",
     "dotenv": "^16.0.1",
+    "node-fetch": "^3.2.6",
     "readline-sync": "^1.4.10"
   },
   "devDependencies": {

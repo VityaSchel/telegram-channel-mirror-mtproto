@@ -2,6 +2,7 @@ import 'dotenv/config'
 import MTProto from '@mtproto/core'
 import authorize from './auth.js'
 import poll from './poll.js'
+import fetch from 'node-fetch'
 
 const pollInterval = 15 * 60 * 1000
 
