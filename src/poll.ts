@@ -98,7 +98,7 @@ export default async function poll() {
     }
   }
 
-  await fs.writeFile(__dirname + 'data.json', JSON.stringify({ last_served_message_id: messages[0].id }), 'utf-8')
+  await fs.writeFile(__dirname + '../data.json', JSON.stringify({ last_served_message_id: messages[0].id }), 'utf-8')
   return true
 }
 
