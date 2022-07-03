@@ -1,5 +1,7 @@
 import _ from 'lodash'
 
+const debug = false
+
 const partsSizes = [1024, 2048, 4096, 8192, 16384, 32768, 65536, 131072, 262144, 524288]
 export async function uploadFile(fileBuffer: Buffer) {
   let fileID = ''
@@ -17,32 +19,33 @@ export async function uploadFile(fileBuffer: Buffer) {
       bytes: part
     })
   }
-
+  debug && console.log('Uploaded file', fileID)
   return { id: fileID, parts: chunks }
 }
 
-export async function downloadFile(type: 'photo' | 'document', id, accessHash, fileReference) {
+export async function downloadFile(type: 'photo' | 'document', id, accessHash, fileReference, photoSizeID?: string): Promise<Buffer> {
   const partSize = 524288 * 2
   let dcId
   const downloadPart = async (offset: number) => {
-    const file = await global.api.call('upload.getFile', {
-      location: type === 'photo' 
-        ? { _: 'inputPhotoFileLocation', id, access_hash: accessHash, file_reference: fileReference } 
+    const body = {
+      location: type === 'photo'
+        ? { _: 'inputPhotoFileLocation', id, access_hash: accessHash, file_reference: fileReference, thumb_size: photoSizeID }
         : { _: 'inputDocumentFileLocation', id, access_hash: accessHash, file_reference: fileReference },
       offset: offset,
       limit: partSize
-    }, dcId && { dcId })
+    }
+    const file = await global.api.call('upload.getFile', body, dcId && { dcId })
     return file
   }
 
-  let partBytesLength, i = 1
+  let partBytesLength
+  let iter = 0
   const fileChunks = []
   while (partBytesLength === undefined || partBytesLength === partSize) {
+    debug && console.log('Downloading part of file', iter, iter * partSize)
+    let file
     try {
-      const file = await downloadPart(i * partSize)
-      partBytesLength = file.bytes.length
-      fileChunks.push(file.bytes)
-      i++
+      file = await downloadPart(iter * partSize)
     } catch(e) {
       if (e._ === 'mt_rpc_error' && e.error_message.startsWith('FILE_MIGRATE_')) {
         const _dcId = Number(e.error_message.substring('FILE_MIGRATE_'.length))
@@ -52,8 +55,23 @@ export async function downloadFile(type: 'photo' | 'document', id, accessHash, f
         throw e
       }
     }
+    partBytesLength = file.bytes.length
+    debug && console.log('Downloaded part of file', iter, iter * partSize, partBytesLength)
+    fileChunks.push(file.bytes)
+    iter++
   } 
   const fileChunksBuffers = fileChunks.map(chunk => Buffer.from(chunk))
   const fileBuffer = Buffer.concat(fileChunksBuffers)
+  debug && console.log('Downloaded file', fileBuffer)
   return fileBuffer
+}
+
+export default async function reuploadFile(type: 'photo' | 'document', fileID, accessHash, fileReference, photoSizeID?: string): Promise<{
+  id: string
+  parts: number
+}> {
+  debug && console.log('reuploading', type, fileID, accessHash, fileReference)
+  const file = await downloadFile(type, fileID, accessHash, fileReference, photoSizeID)
+  const { id, parts } = await uploadFile(file)
+  return { id, parts }
 }

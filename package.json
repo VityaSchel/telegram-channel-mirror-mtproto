@@ -13,6 +13,7 @@
   "dependencies": {
     "@mtproto/core": "^6.2.0",
     "dotenv": "^16.0.1",
+    "form-data": "^4.0.0",
     "just-clone": "^6.0.1",
     "lodash": "^4.17.21",
     "node-fetch": "^3.2.6",

@@ -54,3 +54,54 @@ export function checkPassword({ srp_id, A, M1 }) {
     },
   })
 }
+
+export function mtprotoEntitiesToBotAPI(mtprotoEntities: object[]): object[] {
+  return mtprotoEntities.map(mtprotoEntity => {
+    let entity = {}
+    switch (mtprotoEntity['_']) {
+      case 'messageEntityBold':
+        entity = { type: 'bold' }
+        break
+
+      case 'messageEntityTextUrl':
+        entity = { type: 'text_link', url: mtprotoEntity['url'] }
+        break
+
+      case 'messageEntityUrl':
+        entity = { type: 'url' }
+        break
+
+      case 'messageEntityItalic':
+        entity = { type: 'italic' }
+        break
+
+      case 'messageEntityUnderline':
+        entity = { type: 'underline' }
+        break
+
+      case 'messageEntityCode':
+        entity = { type: 'code' }
+        break
+
+      case 'messageEntityPre':
+        entity = { type: 'pre', language: mtprotoEntity['language'] }
+        break
+
+      case 'messageEntityStrike':
+        entity = { type: 'strikethrough' }
+        break
+
+      case 'messageEntityBlockquote':
+        entity = { type: 'code' }
+        break
+
+      case 'messageEntitySpoiler':
+        entity = { type: 'spoiler' }
+        break
+
+      default:
+        return null
+    }
+    return { ...entity, offset: mtprotoEntity['offset'], length: mtprotoEntity['length'] }
+  }).filter(Boolean)
+}

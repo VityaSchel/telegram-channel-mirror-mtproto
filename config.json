@@ -1,3 +1,5 @@
 {
-  "native_copy": true
+  "native_copy": "auto",
+  "report_errors_to_telegram": false,
+  "interval": 900000
 }
