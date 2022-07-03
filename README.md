@@ -20,7 +20,7 @@ Use config.json to adjust you needs.
 
 Key|Description
 ---|---
-native_copy|Set to `true` to use copyMessage method in API. It's more stable and much simplier, however it only works when channel admin allows to forward messages. When admin disallows it, set to `false`, and the bot will try to reproduce the same message using various fields from original. Set to `"auto"` and bot will decide this itself based on "noforwards" field of resolved peer (recommended). ⚠️ If set to `false` or `"auto"` **you must create a bot and add to target destination (B) channel**. See [this issue](https://github.com/alik0211/mtproto-core/issues/148) for details.
+native_copy|Set to `true` to use copyMessage method in API. It's more stable and much simplier, however it only works when channel admin allows to forward messages. When admin disallows it, set to `false`, and the bot will try to reproduce the same message using various fields from original. Set to `"auto"` and bot will decide this itself based on "noforwards" field of resolved peer everytime it's polling messages (recommended). ⚠️ If set to `false` or `"auto"` **you must create a bot and add to target destination (B) channel**. See [this issue](https://github.com/alik0211/mtproto-core/issues/148) for details.
 report_errors_to_telegram|Set to true to report all exceptions via Telegram bot. you must configure `ERROR_HANDLER_USER_ID` and `ERROR_HANDLER_BOT_TOKEN` in .env
 interval|This is how fast the bot will check target channel (A) in milliseconds (1/1000 of second). Recommended value is 5-15 minutes (`300000` - `900000`)
 

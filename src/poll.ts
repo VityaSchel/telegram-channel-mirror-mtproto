@@ -10,6 +10,8 @@ import { mtprotoEntitiesToBotAPI } from './utils.js'
 const __dirname = dirname(fileURLToPath(import.meta.url)) + '/'
 
 export default async function poll() {
+  await resetNativeCopySetting()
+
   const channel = global.channel
   const target = global.target
 
@@ -23,7 +25,7 @@ export default async function poll() {
 
   if (!messages.length) return true
 
-  if (global.config.native_copy) {
+  if (global.copy_natively) {
     await global.api.call('messages.forwardMessages', {
       drop_author: true,
       from_peer: { _: 'inputPeerChannel', channel_id: channel.id, access_hash: channel.access_hash },
@@ -163,5 +165,18 @@ async function msgMediaToInputMedia(messageMedia, botsAPI = false) {
     }
   } else {
     console.error('Unknown media', messageMedia, Date.now())
+  }
+}
+
+async function resetNativeCopySetting() {
+  // In case channel admin decides to change "noforwards" option in channel settings while bot is running,
+  // and native_copy is set to "auto", the bot will switch loaded config and notify user.
+  if (global.config.native_copy !== 'auto') return
+  
+  const resolvedPeer = await global.api.call('contacts.resolveUsername', { username: process.env.FROM_USERNAME })
+  const channel = resolvedPeer.chats[0]
+  if (global.copy_natively !== !channel.noforwards) {
+    global.copy_natively = !channel.noforwards
+    console.log('config.native_copy was set to "auto". Channel admin changed noforwards settings, switching loaded config in real-time... Bot is now copying messages', channel.noforwards ? 'using bypassing algorithm' : 'natively')
   }
 }
