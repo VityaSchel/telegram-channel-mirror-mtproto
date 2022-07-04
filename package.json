@@ -6,7 +6,7 @@
   "main": "index.js",
   "scripts": {
     "build": "tsc",
-    "pm2": "pm2 start \"node index.js\" --name=\"_mirror\" --no-autorestart"
+    "pm2": "pm2 start \"node out/index.js\" --name=\"_mirror\" --no-autorestart"
   },
   "author": "vityaschel <hi@hloth.dev> (https://hloth.dev/)",
   "license": "MIT",

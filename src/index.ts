@@ -28,9 +28,14 @@ try {
 
   const resolvedPeer = await api.call('contacts.resolveUsername', { username: process.env.FROM_USERNAME })
   global.channel = resolvedPeer.chats[0]
-  if (global.config.native_copy === 'auto') {
+  if (['auto', 'auto_LEGACY'].includes(global.config.native_copy)) {
     global.copy_natively = !global.channel.noforwards
-    console.log('config.native_copy was set to "auto". Bot is going to copy messages', global.channel.noforwards ? 'using bypassing algorithm' : 'natively')
+    global.force_copy_natively_override = true
+    console.log('config.native_copy was set to auto. Bot is going to copy messages', global.channel.noforwards ? 'using bypassing algorithm' : 'natively')
+  } else if (typeof global.config.native_copy === 'boolean') {
+    global.copy_natively = global.config.native_copy
+  } else {
+    throw 'Unknown config.native_copy option value.'
   }
 
   const targetPeer = await api.call('contacts.resolveUsername', { username: process.env.TO_USERNAME })
@@ -51,5 +56,5 @@ try {
   } else {
     throw e
   }
-  process.exit(0)
+  process.exit(1)
 }
