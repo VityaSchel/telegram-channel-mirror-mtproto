@@ -6,10 +6,17 @@ import poll from './poll.js'
 import fetch from 'node-fetch'
 import { dirname } from 'path'
 import { fileURLToPath } from 'url'
+import * as Yup from 'yup'
 
 const __dirname = dirname(fileURLToPath(import.meta.url)) + '/'
 const config = JSON.parse(await fs.readFile(__dirname + '../config.json', 'utf-8'))
 const pollInterval = config['interval'] //15 * 60 * 1000
+await Yup.object({
+  native_copy: Yup.mixed().oneOf(['auto', 'auto_LEGACY', true, false]).required(),
+  report_errors_to_telegram: Yup.bool().required(),
+  interval: Yup.number().integer().positive().required(),
+  limit: Yup.number().integer().min(1).max(100).required(),
+}).validate(config)
 global.config = config
 
 try {
