@@ -20,10 +20,15 @@ export async function reproduceMessage(messages: object[]) {
     if (!message['media'].length) {
       await global.api.call('messages.sendMessage', sharedOptions)
     } else if (message['media'].length === 1) {
-      await global.api.call('messages.sendMedia', {
-        media: await msgMediaToInputMedia(message['media'][0]),
-        ...sharedOptions
-      })
+      const media = await msgMediaToInputMedia(message['media'][0])
+      if (!media) {
+        await global.api.call('messages.sendMessage', sharedOptions)
+      } else {
+        await global.api.call('messages.sendMedia', {
+          media: await msgMediaToInputMedia(message['media'][0]),
+          ...sharedOptions
+        })
+      }
     } else if (message['media'].length > 1) {
       // UNCOMMENT WHEN https://github.com/alik0211/mtproto-core/issues/148 FIXED
       // const mediaArray = []
@@ -95,45 +100,56 @@ function groupMessages(messagesSrc): object[] {
   return _messages
 }
 
-async function msgMediaToInputMedia(messageMedia, botsAPI = false) {
+async function msgMediaToInputMedia(messageMedia, botsAPI = false): Promise<Buffer | object | void> {
   const type = messageMedia._
-  if (type === 'messageMediaDocument') {
-    const file = messageMedia.document
-    if (botsAPI) {
-      const fileBuffer = await downloadFile('document', file.id, file.access_hash, file.file_reference)
-      return fileBuffer
-    } else {
-      const { id, parts } = await reuploadFile('document', file.id, file.access_hash, file.file_reference)
-      return {
-        _: 'inputMediaUploadedDocument',
-        file: {
-          _: 'inputFile',
-          id: id,
-          parts: parts,
-          name: id,
-        },
-        mime_type: file.mime_type
-      }
-    }
-  } else if (type === 'messageMediaPhoto') {
-    const file = messageMedia.photo
-    const photoSize = file.sizes.find(size => size._ === 'photoSizeProgressive').type
-    if (botsAPI) {
-      const fileBuffer = await downloadFile('photo', file.id, file.access_hash, file.file_reference, photoSize)
-      return fileBuffer
-    } else {
-      const { id, parts } = await reuploadFile('photo', file.id, file.access_hash, file.file_reference, photoSize)
-      return {
-        _: 'inputMediaUploadedPhoto',
-        file: {
-          _: 'inputFile',
-          id: id,
-          parts: parts,
-          name: id + '.jpeg'// + {'.png'}
+  switch(type){
+    case 'messageMediaDocument':
+      return await (async () => {
+        const file = messageMedia.document
+        if (botsAPI) {
+          const fileBuffer = await downloadFile('document', file.id, file.access_hash, file.file_reference)
+          return fileBuffer
+        } else {
+          const { id, parts } = await reuploadFile('document', file.id, file.access_hash, file.file_reference)
+          return {
+            _: 'inputMediaUploadedDocument',
+            file: {
+              _: 'inputFile',
+              id: id,
+              parts: parts,
+              name: id,
+            },
+            mime_type: file.mime_type
+          }
         }
-      }
-    }
-  } else {
-    console.error('Unknown media', messageMedia, Date.now())
+      })()
+
+    case 'messageMediaPhoto':
+      return await (async () => {
+        const file = messageMedia.photo
+        const photoSize = file.sizes.find(size => size._ === 'photoSizeProgressive').type
+        if (botsAPI) {
+          const fileBuffer = await downloadFile('photo', file.id, file.access_hash, file.file_reference, photoSize)
+          return fileBuffer
+        } else {
+          const { id, parts } = await reuploadFile('photo', file.id, file.access_hash, file.file_reference, photoSize)
+          return {
+            _: 'inputMediaUploadedPhoto',
+            file: {
+              _: 'inputFile',
+              id: id,
+              parts: parts,
+              name: id + '.jpeg'// + {'.png'}
+            }
+          }
+        }
+      })()
+
+    case 'messageMediaWebPage':
+      return null
+  
+    default:
+      console.error('Unknown media', messageMedia, Date.now())
+      return null
   }
 }

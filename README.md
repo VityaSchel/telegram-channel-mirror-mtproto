@@ -46,6 +46,12 @@ It is highly recommended to not use auto-restart of process on error, because yo
 
 This is how fast the bot will check target channel (A) in milliseconds (1/1000 of second). Recommended value is 5-15 minutes (`300000` - `900000`)
 
+### `limit`
+
+This is how much posts bot will get in target channel (A). Set as high as you want, but remember that message with multiple media (media group) is separate messages! So it's recommended to set it more than 10.
+
+According to MTProto documentation, maximum limit is 100.
+
 ## Usage
 
 Node >= 16.13.1

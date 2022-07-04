@@ -14,7 +14,7 @@ export default async function poll() {
   const history: object[] = await global.api.call('messages.getHistory', {
     peer: { _: 'inputPeerChannel', channel_id: channel.id, access_hash: channel.access_hash },
     ...(data.last_served_message_id !== null && { min_id: data.last_served_message_id }),
-    limit: 15
+    limit: global.config.limit
   })
   const messages = history['messages'].filter(msg => msg._ === 'message')
 
