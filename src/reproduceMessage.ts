@@ -22,6 +22,7 @@ export async function reproduceMessage(messages: object[]) {
     } else if (message['media'].length === 1) {
       const media = await msgMediaToInputMedia(message['media'][0])
       if (!media) {
+        if (!sharedOptions.message) return console.error('Message is empty, hence skipping this post')
         await global.api.call('messages.sendMessage', sharedOptions)
       } else {
         await global.api.call('messages.sendMedia', {

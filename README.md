@@ -16,7 +16,7 @@ Use this bot to forward or copy messages from target channel A to destination ch
 
 ## Config
 
-Use config.json to adjust you needs. Config changes require restart.
+Use config.json to adjust you needs. Config changes require restart. Config is validated using Yup before connecting to API.
 
 ### `native_copy`
 
