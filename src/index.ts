@@ -14,6 +14,8 @@ const config = JSON.parse(
   await fs.readFile(__dirname + '../config.json', 'utf-8')
 )
 
+await fs.writeFile(__dirname + '../data.json', JSON.stringify({ last_served_message_id: null}), 'utf-8')
+
 const pollInterval = config['interval'] //15 * 60 * 1000
 await Yup.object({
   native_copy: Yup.mixed()
