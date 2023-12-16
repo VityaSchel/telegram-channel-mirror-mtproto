@@ -16,9 +16,11 @@ export default async function poll() {
     ...(data.last_served_message_id !== null && { min_id: data.last_served_message_id }),
     limit: global.config.limit
   })
-  const messages = history['messages'].filter(msg => msg._ === 'message')
+  let messages = history['messages'].filter(msg => msg._ === 'message')
 
   if (!messages.length) return true
+
+  messages = messages.filter(item => item.message.includes(process.env.INCLUDES_STRING))
 
   if (global.force_copy_natively_override) {
     // First time bots run, it can decide using "noforwards prop" (optimisation)
