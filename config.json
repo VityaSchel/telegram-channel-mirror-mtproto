@@ -1,6 +1,6 @@
 {
   "native_copy": true,
   "report_errors_to_telegram": false,
-  "interval": 1000,
+  "interval": 300000,
   "limit": 100
 }

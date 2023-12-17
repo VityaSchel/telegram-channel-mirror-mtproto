@@ -14,8 +14,6 @@ const config = JSON.parse(
   await fs.readFile(__dirname + '../config.json', 'utf-8')
 )
 
-await fs.writeFile(__dirname + '../data.json', JSON.stringify({ last_served_message_id: null}), 'utf-8')
-
 const pollInterval = config['interval'] //15 * 60 * 1000
 await Yup.object({
   native_copy: Yup.mixed()
@@ -98,7 +96,7 @@ process.on('unhandledRejection', (reason, promise) => {
 async function retryWithExponentialBackoff(
   fn: () => Promise<void>,
   maxRetries = 5,
-  delay = 1000
+  delay = 300000
 ) {
   for (let attempt = 1; attempt <= maxRetries; attempt++) {
     try {
@@ -110,7 +108,6 @@ async function retryWithExponentialBackoff(
         error
       )
       await new Promise((resolve) => setTimeout(resolve, delay))
-      delay *= 2
     }
   }
   console.error('Max retries reached. Unable to complete operation.')
