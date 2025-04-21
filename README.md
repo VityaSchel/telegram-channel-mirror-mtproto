@@ -2,6 +2,9 @@
 
 Use this bot to forward or copy messages from target channel A to destination channel B (mirroring).
 
+> [!IMPORTANT]
+> I'm looking for a job! Interested in hiring me? Visit [cv.hloth.dev](https://cv.hloth.dev) to review my resume & CV.
+
 ## Features
 
 - TypeScript
